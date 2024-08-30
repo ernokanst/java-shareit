@@ -1,9 +1,10 @@
-package ru.practicum.shareit.item;
+package ru.practicum.shareit.item.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exceptions.NotFoundException;
 import ru.practicum.shareit.exceptions.ValidationException;
+import ru.practicum.shareit.item.ItemStorage;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.UserStorage;
 import java.util.ArrayList;
@@ -11,22 +12,24 @@ import java.util.List;
 import java.util.Objects;
 
 @Service
-public class ItemService {
+public class ItemServiceImpl implements ItemService {
     private ItemStorage itemStorage;
     private UserStorage userStorage;
 
     @Autowired
-    public ItemService(ItemStorage itemStorage, UserStorage userStorage) {
+    public ItemServiceImpl(ItemStorage itemStorage, UserStorage userStorage) {
         this.itemStorage = itemStorage;
         this.userStorage = userStorage;
     }
 
+    @Override
     public Item add(Item item, Integer userId) {
         item.setOwner(userStorage.get(userId));
         checkItem(item);
         return itemStorage.add(item);
     }
 
+    @Override
     public Item update(Item item, Integer id, Integer userId) {
         if (itemStorage.get(id) == null) {
             throw new NotFoundException("Вещь не найдена");
@@ -37,10 +40,12 @@ public class ItemService {
         return itemStorage.update(item, id);
     }
 
+    @Override
     public List<Item> get(Integer userId) {
         return itemStorage.getFromUser(userId);
     }
 
+    @Override
     public Item getItem(Integer id) {
         if (itemStorage.get(id) == null) {
             throw new NotFoundException("Пользователь не найден");
@@ -48,10 +53,12 @@ public class ItemService {
         return itemStorage.get(id);
     }
 
+    @Override
     public void deleteItem(Integer id) {
         itemStorage.delete(id);
     }
 
+    @Override
     public List<Item> search(String query) {
         if (query.isBlank()) {
             return new ArrayList<>();

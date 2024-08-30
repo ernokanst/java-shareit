@@ -1,25 +1,28 @@
-package ru.practicum.shareit.user;
+package ru.practicum.shareit.user.service;
 
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exceptions.*;
+import ru.practicum.shareit.user.UserStorage;
 import ru.practicum.shareit.user.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import java.util.List;
 
 @Service
-public class UserService {
+public class UserServiceImpl implements UserService {
     private UserStorage userStorage;
 
     @Autowired
-    public UserService(UserStorage userStorage) {
+    public UserServiceImpl(UserStorage userStorage) {
         this.userStorage = userStorage;
     }
 
+    @Override
     public User add(User user) {
         checkUser(user);
         return userStorage.add(user);
     }
 
+    @Override
     public User update(User user, Integer id) {
         if (userStorage.get(id) == null) {
             throw new NotFoundException("Пользователь не найден");
@@ -28,10 +31,12 @@ public class UserService {
         return userStorage.update(user, id);
     }
 
+    @Override
     public List<User> get() {
         return userStorage.get();
     }
 
+    @Override
     public User getUser(Integer id) {
         if (userStorage.get(id) == null) {
             throw new NotFoundException("Пользователь не найден");
@@ -39,6 +44,7 @@ public class UserService {
         return userStorage.get(id);
     }
 
+    @Override
     public void deleteUser(Integer id) {
         userStorage.delete(id);
     }
