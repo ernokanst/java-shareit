@@ -2,14 +2,10 @@ package ru.practicum.shareit.item;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.practicum.shareit.exceptions.EmailExistsException;
 import ru.practicum.shareit.exceptions.NotFoundException;
 import ru.practicum.shareit.exceptions.ValidationException;
-import ru.practicum.shareit.item.ItemStorage;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.UserStorage;
-import ru.practicum.shareit.user.model.User;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -26,7 +22,7 @@ public class ItemService {
     }
 
     public Item add(Item item, Integer userId) {
-        item.setOwner(userId);
+        item.setOwner(userStorage.get(userId));
         checkItem(item);
         return itemStorage.add(item);
     }
@@ -35,7 +31,7 @@ public class ItemService {
         if (itemStorage.get(id) == null) {
             throw new NotFoundException("Вещь не найдена");
         }
-        if (!Objects.equals(itemStorage.get(id).getOwner(), userId)) {
+        if (!Objects.equals(itemStorage.get(id).getOwner().getId(), userId)) {
             throw new NotFoundException("Пользователь не соответствует владельцу вещи");
         }
         return itemStorage.update(item, id);
@@ -64,7 +60,7 @@ public class ItemService {
     }
 
     public void checkItem(Item item) {
-        if (item.getOwner() == null || userStorage.get(item.getOwner()) == null) {
+        if (item.getOwner() == null || userStorage.get(item.getOwner().getId()) == null) {
             throw new NotFoundException("Владелец указан неверно");
         }
         if (item.getName() == null || item.getName().isBlank()) {

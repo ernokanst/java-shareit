@@ -32,7 +32,7 @@ public class ItemStorage {
     }
 
     public List<Item> getFromUser(Integer userId) {
-        return items.values().stream().filter(x -> Objects.equals(x.getOwner(), userId)).collect(Collectors.toList());
+        return items.values().stream().filter(x -> Objects.equals(x.getOwner().getId(), userId)).collect(Collectors.toList());
     }
 
     public Item get(Integer id) {
