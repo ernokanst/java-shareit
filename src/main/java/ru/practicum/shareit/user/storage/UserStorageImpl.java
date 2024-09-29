@@ -23,7 +23,7 @@ public class UserStorageImpl implements UserStorage {
 
     @Override
     public User update(User user, Integer id) {
-        if (users.values().stream().anyMatch(x -> (x.getEmail().equals(user.getEmail()) && x.getId() != user.getId()))) {
+        if (users.values().stream().anyMatch(x -> (x.getEmail().equals(user.getEmail()) && !Objects.equals(x.getId(), user.getId())))) {
             throw new EmailExistsException("Пользователь с указанной почтой уже существует");
         }
         users.replace(id, user);
