@@ -3,54 +3,68 @@ package ru.practicum.shareit.item.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exceptions.NotFoundException;
-import ru.practicum.shareit.exceptions.ValidationException;
-import ru.practicum.shareit.item.ItemStorage;
+import ru.practicum.shareit.item.storage.ItemStorage;
+import ru.practicum.shareit.item.dto.*;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.user.UserStorage;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import ru.practicum.shareit.user.storage.UserStorage;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class ItemServiceImpl implements ItemService {
     private ItemStorage itemStorage;
     private UserStorage userStorage;
+    private ItemMapper itemMapper;
 
     @Autowired
-    public ItemServiceImpl(ItemStorage itemStorage, UserStorage userStorage) {
+    public ItemServiceImpl(ItemStorage itemStorage, UserStorage userStorage, ItemMapper itemMapper) {
         this.itemStorage = itemStorage;
         this.userStorage = userStorage;
+        this.itemMapper = itemMapper;
     }
 
     @Override
-    public Item add(Item item, Integer userId) {
-        item.setOwner(userStorage.get(userId));
-        checkItem(item);
-        return itemStorage.add(item);
+    public ItemDto add(ItemDto item, Integer userId) {
+        Item i = itemMapper.toItem(item);
+        if (userStorage.get(userId).isEmpty()) {
+            throw new NotFoundException("Владелец вещи не найден");
+        }
+        i.setOwner(userStorage.get(userId).get());
+        return itemMapper.toItemDto(itemStorage.add(i));
     }
 
     @Override
-    public Item update(Item item, Integer id, Integer userId) {
-        if (itemStorage.get(id) == null) {
+    public ItemDto update(ItemDto item, Integer userId) {
+        if (itemStorage.get(item.getId()).isEmpty()) {
             throw new NotFoundException("Вещь не найдена");
         }
-        if (!Objects.equals(itemStorage.get(id).getOwner().getId(), userId)) {
+        Item newItem = itemStorage.get(item.getId()).get();
+        if (!Objects.equals(newItem.getOwner().getId(), userId)) {
             throw new NotFoundException("Пользователь не соответствует владельцу вещи");
         }
-        return itemStorage.update(item, id);
+        if (item.getName() != null) {
+            newItem.setName(item.getName());
+        }
+        if (item.getDescription() != null) {
+            newItem.setDescription(item.getDescription());
+        }
+        if (item.getAvailable() != null) {
+            newItem.setAvailable(item.getAvailable());
+        }
+        return itemMapper.toItemDto(itemStorage.update(newItem));
     }
 
     @Override
-    public List<Item> get(Integer userId) {
-        return itemStorage.getFromUser(userId);
+    public List<ItemDto> get(Integer userId) {
+        return itemStorage.getFromUser(userId).stream().map(itemMapper::toItemDto).collect(Collectors.toList());
     }
 
     @Override
-    public Item getItem(Integer id) {
-        if (itemStorage.get(id) == null) {
+    public ItemDto getItem(Integer id) {
+        if (itemStorage.get(id).isEmpty()) {
             throw new NotFoundException("Пользователь не найден");
         }
-        return itemStorage.get(id);
+        return itemMapper.toItemDto(itemStorage.get(id).get());
     }
 
     @Override
@@ -59,25 +73,10 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public List<Item> search(String query) {
-        if (query.isBlank()) {
+    public List<ItemDto> search(String text) {
+        if (text.isBlank()) {
             return new ArrayList<>();
         }
-        return itemStorage.search(query);
-    }
-
-    public void checkItem(Item item) {
-        if (item.getOwner() == null || userStorage.get(item.getOwner().getId()) == null) {
-            throw new NotFoundException("Владелец указан неверно");
-        }
-        if (item.getName() == null || item.getName().isBlank()) {
-            throw new ValidationException("Название не указано");
-        }
-        if (item.getDescription() == null || item.getDescription().isBlank()) {
-            throw new ValidationException("Описание не указано");
-        }
-        if (item.getAvailable() == null) {
-            throw new ValidationException("Не указан статус вещи");
-        }
+        return itemStorage.search(text).stream().map(itemMapper::toItemDto).collect(Collectors.toList());
     }
 }

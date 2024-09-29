@@ -8,10 +8,10 @@ import ru.practicum.shareit.user.model.User;
 @Data
 @AllArgsConstructor
 public class Item {
-    private int id;
+    private Integer id;
     private String name;
     private String description;
-    private Boolean available;
+    private boolean available;
     private User owner;
     private ItemRequest request;
 }
