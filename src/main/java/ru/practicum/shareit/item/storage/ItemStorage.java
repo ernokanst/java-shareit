@@ -9,11 +9,11 @@ public interface ItemStorage {
 
     Item update(Item item);
 
-    List<Item> getFromUser(Integer userId);
+    List<Item> getFromUser(int userId);
 
-    Optional<Item> get(Integer id);
+    Optional<Item> get(int id);
 
-    void delete(Integer id);
+    void delete(int id);
 
     List<Item> search(String query);
 }

@@ -14,7 +14,7 @@ public class UserStorageImpl implements UserStorage {
     @Override
     public User add(User user) {
         if (users.values().stream().map(User::getEmail).collect(Collectors.toSet()).contains(user.getEmail())) {
-            throw new EmailExistsException("Пользователь с указанной почтой уже существует");
+            throw new EmailExistsException("Пользователь с указанной почтой уже существует", user);
         }
         user.setId(currentId++);
         users.put(user.getId(), user);
@@ -22,9 +22,9 @@ public class UserStorageImpl implements UserStorage {
     }
 
     @Override
-    public User update(User user, Integer id) {
+    public User update(User user, int id) {
         if (users.values().stream().anyMatch(x -> (x.getEmail().equals(user.getEmail()) && !Objects.equals(x.getId(), user.getId())))) {
-            throw new EmailExistsException("Пользователь с указанной почтой уже существует");
+            throw new EmailExistsException("Пользователь с указанной почтой уже существует", user);
         }
         users.replace(id, user);
         return user;
@@ -36,7 +36,7 @@ public class UserStorageImpl implements UserStorage {
     }
 
     @Override
-    public Optional<User> get(Integer id) {
+    public Optional<User> get(int id) {
         return Optional.ofNullable(users.get(id));
     }
 
@@ -46,7 +46,7 @@ public class UserStorageImpl implements UserStorage {
     }
 
     @Override
-    public void delete(Integer id) {
+    public void delete(int id) {
         users.remove(id);
     }
 }

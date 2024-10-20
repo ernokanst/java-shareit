@@ -24,23 +24,17 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public ItemDto add(ItemDto item, Integer userId) {
+    public ItemDto add(ItemDto item, int userId) {
         Item i = itemMapper.toItem(item);
-        if (userStorage.get(userId).isEmpty()) {
-            throw new NotFoundException("Владелец вещи не найден");
-        }
-        i.setOwner(userStorage.get(userId).get());
+        i.setOwner(userStorage.get(userId).orElseThrow());
         return itemMapper.toItemDto(itemStorage.add(i));
     }
 
     @Override
-    public ItemDto update(ItemDto item, Integer userId) {
-        if (itemStorage.get(item.getId()).isEmpty()) {
-            throw new NotFoundException("Вещь не найдена");
-        }
-        Item newItem = itemStorage.get(item.getId()).get();
-        if (!Objects.equals(newItem.getOwner().getId(), userId)) {
-            throw new NotFoundException("Пользователь не соответствует владельцу вещи");
+    public ItemDto update(ItemDto item, int userId) {
+        Item newItem = itemStorage.get(item.getId()).orElseThrow();
+        if (newItem.getOwner().getId() != userId) {
+            throw new NotFoundException("Пользователь не соответствует владельцу вещи", item);
         }
         if (item.getName() != null) {
             newItem.setName(item.getName());
@@ -55,20 +49,17 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public List<ItemDto> get(Integer userId) {
+    public List<ItemDto> get(int userId) {
         return itemStorage.getFromUser(userId).stream().map(itemMapper::toItemDto).collect(Collectors.toList());
     }
 
     @Override
-    public ItemDto getItem(Integer id) {
-        if (itemStorage.get(id).isEmpty()) {
-            throw new NotFoundException("Пользователь не найден");
-        }
-        return itemMapper.toItemDto(itemStorage.get(id).get());
+    public ItemDto getItem(int id) {
+        return itemMapper.toItemDto(itemStorage.get(id).orElseThrow());
     }
 
     @Override
-    public void deleteItem(Integer id) {
+    public void deleteItem(int id) {
         itemStorage.delete(id);
     }
 

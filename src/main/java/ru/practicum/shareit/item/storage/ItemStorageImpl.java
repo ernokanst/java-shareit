@@ -7,51 +7,46 @@ import java.util.stream.Collectors;
 
 @Component
 public class ItemStorageImpl implements ItemStorage {
-    private Map<Integer, Map<Integer, Item>> items = new LinkedHashMap<>();
-    private Map<Integer, Integer> itemsByUser = new LinkedHashMap<>();
+    private Map<Integer, Item> items = new LinkedHashMap<>();
+    private Map<Integer, Set<Integer>> itemsByUser = new LinkedHashMap<>();
     private int currentId = 1;
 
     @Override
     public Item add(Item item) {
         item.setId(currentId++);
-        Integer owner = item.getOwner().getId();
-        if (!(items.containsKey(owner))) {
-            items.put(owner, new HashMap<>());
+        int owner = item.getOwner().getId();
+        if (!(itemsByUser.containsKey(owner))) {
+            itemsByUser.put(owner, new HashSet<>());
         }
-        items.get(owner).put(item.getId(), item);
-        itemsByUser.put(item.getId(), owner);
+        items.put(item.getId(), item);
+        itemsByUser.get(owner).add(item.getId());
         return item;
     }
 
     @Override
     public Item update(Item item) {
-        Integer owner = item.getOwner().getId();
-        items.get(owner).replace(item.getId(), item);
+        items.replace(item.getId(), item);
         return item;
     }
 
     @Override
-    public List<Item> getFromUser(Integer userId) {
-        return items.get(userId).values().stream().toList();
+    public List<Item> getFromUser(int userId) {
+        return itemsByUser.get(userId).stream().map(x -> items.get(x)).toList();
     }
 
     @Override
-    public Optional<Item> get(Integer id) {
-        return Optional.ofNullable(items.get(itemsByUser.get(id)).get(id));
+    public Optional<Item> get(int id) {
+        return Optional.ofNullable(items.get(id));
     }
 
     @Override
-    public void delete(Integer id) {
+    public void delete(int id) {
         items.remove(id);
     }
 
     @Override
     public List<Item> search(String text) {
-        Set<Item> allItems = new HashSet<>();
-        for (Collection<Item> c : items.values().stream().map(Map::values).collect(Collectors.toSet())) {
-            allItems.addAll(c);
-        }
-        return allItems.stream()
+        return items.values().stream()
                 .filter(x -> (x.getName().toUpperCase().contains(text.toUpperCase()) || x.getDescription().toUpperCase().contains(text.toUpperCase())))
                 .filter(Item::isAvailable)
                 .collect(Collectors.toList());

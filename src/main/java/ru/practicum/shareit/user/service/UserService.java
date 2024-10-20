@@ -6,11 +6,11 @@ import java.util.List;
 public interface UserService {
     UserDto add(UserDto user);
 
-    UserDto update(UserDto user, Integer id);
+    UserDto update(UserDto user, int id);
 
     List<UserDto> get();
 
-    UserDto getUser(Integer id);
+    UserDto getUser(int id);
 
-    void deleteUser(Integer id);
+    void deleteUser(int id);
 }

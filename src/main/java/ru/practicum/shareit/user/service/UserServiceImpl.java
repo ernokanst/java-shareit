@@ -1,7 +1,6 @@
 package ru.practicum.shareit.user.service;
 
 import org.springframework.stereotype.Service;
-import ru.practicum.shareit.exceptions.*;
 import ru.practicum.shareit.user.storage.UserStorage;
 import ru.practicum.shareit.user.dto.*;
 import ru.practicum.shareit.user.model.User;
@@ -27,11 +26,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDto update(UserDto user, Integer id) {
-        if (userStorage.get(id).isEmpty()) {
-            throw new NotFoundException("Пользователь не найден");
-        }
-        User newUser = userStorage.get(id).get();
+    public UserDto update(UserDto user, int id) {
+        User newUser = userStorage.get(id).orElseThrow();
         if (user.getName() != null) {
             newUser.setName(user.getName());
         }
@@ -47,15 +43,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDto getUser(Integer id) {
-        if (userStorage.get(id).isEmpty()) {
-            throw new NotFoundException("Пользователь не найден");
-        }
-        return userMapper.toUserDto(userStorage.get(id).get());
+    public UserDto getUser(int id) {
+        return userMapper.toUserDto(userStorage.get(id).orElseThrow());
     }
 
     @Override
-    public void deleteUser(Integer id) {
+    public void deleteUser(int id) {
         userStorage.delete(id);
     }
 }

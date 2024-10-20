@@ -9,6 +9,7 @@ import lombok.Data;
 @AllArgsConstructor
 public class UserDto {
     private int id;
+    @NotBlank(message = "Имя не указано")
     private String name;
     @NotBlank(message = "Почта не указана")
     @Email(message = "Почта указана неверно")
