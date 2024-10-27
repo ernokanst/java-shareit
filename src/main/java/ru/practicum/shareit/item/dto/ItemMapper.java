@@ -20,7 +20,7 @@ public class ItemMapper {
         );
     }
 
-    public ItemDtoWithDates toItemDtoWithDates(Item item, List<Comment> comments, List<Booking> last, List<Booking> next) {
+    public ItemDtoWithDates toItemDtoWithDates(Item item, int userId, List<Comment> comments, List<Booking> last, List<Booking> next) {
         return new ItemDtoWithDates(
                 item.getId(),
                 item.getName(),
@@ -29,8 +29,8 @@ public class ItemMapper {
                 item.getOwner(),
                 item.getRequest(),
                 comments.stream().map(this::toCommentDto).toList(),
-                !(last.isEmpty()) ? last.getFirst().getEnd().toString() : null,
-                !(next.isEmpty()) ? next.getFirst().getStart().toString() : null
+                !(last.isEmpty()) && item.getOwner() == userId ? last.getFirst().getEnd().toString() : null,
+                !(next.isEmpty()) && item.getOwner() == userId ? next.getFirst().getStart().toString() : null
         );
     }
 
@@ -46,6 +46,11 @@ public class ItemMapper {
     }
 
     public CommentDto toCommentDto(Comment comment) {
-        return new CommentDto(comment.getId(), comment.getText(), comment.getAuthor().getName(), comment.getItem(), comment.getCreated().toString());
+        return new CommentDto(
+                comment.getId(),
+                comment.getText(),
+                comment.getAuthor().getName(),
+                comment.getItem(),
+                comment.getCreated().toString());
     }
 }

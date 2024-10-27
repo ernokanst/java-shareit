@@ -66,7 +66,8 @@ public class BookingServiceImpl implements BookingService {
         }
         switch (state) {
             case CURRENT -> {
-                return bookingRepository.findByBooker_IdAndStartIsBeforeAndEndIsAfterOrderByStartDesc(userId, LocalDateTime.now(), LocalDateTime.now());
+                return bookingRepository.findByBooker_IdAndStartIsBeforeAndEndIsAfterOrderByStartDesc(userId,
+                        LocalDateTime.now(), LocalDateTime.now());
             }
             case PAST -> {
                 return bookingRepository.findByBooker_IdAndEndIsBeforeOrderByStartDesc(userId, LocalDateTime.now());
@@ -93,7 +94,8 @@ public class BookingServiceImpl implements BookingService {
         }
         switch (state) {
             case CURRENT -> {
-                return bookingRepository.findByItemOwner_IdAndStartIsBeforeAndEndIsAfterOrderByStartDesc(userId, LocalDateTime.now(), LocalDateTime.now());
+                return bookingRepository.findByItemOwner_IdAndStartIsBeforeAndEndIsAfterOrderByStartDesc(userId,
+                        LocalDateTime.now(), LocalDateTime.now());
             }
             case PAST -> {
                 return bookingRepository.findByItemOwner_IdAndEndIsBeforeOrderByStartDesc(userId, LocalDateTime.now());

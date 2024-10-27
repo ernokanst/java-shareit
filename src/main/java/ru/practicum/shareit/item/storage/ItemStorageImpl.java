@@ -47,7 +47,8 @@ public class ItemStorageImpl implements ItemStorage {
     @Override
     public List<Item> search(String text) {
         return items.values().stream()
-                .filter(x -> (x.getName().toUpperCase().contains(text.toUpperCase()) || x.getDescription().toUpperCase().contains(text.toUpperCase())))
+                .filter(x -> (x.getName().toUpperCase().contains(text.toUpperCase()) ||
+                        x.getDescription().toUpperCase().contains(text.toUpperCase())))
                 .filter(Item::isAvailable)
                 .collect(Collectors.toList());
     }

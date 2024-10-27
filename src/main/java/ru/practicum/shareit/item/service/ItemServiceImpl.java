@@ -52,13 +52,19 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public List<ItemDtoWithDates> get(int userId) {
-        return itemRepository.findByOwner(userId).stream().map(x -> itemMapper.toItemDtoWithDates(x, commentRepository.findByItemId(x.getId()), bookingRepository.findByItem_IdAndEndIsBeforeOrderByEndDesc(x.getId(), LocalDateTime.now()), bookingRepository.findByItem_IdAndStartIsAfterOrderByStartAsc(x.getId(), LocalDateTime.now()))).collect(Collectors.toList());
+        return itemRepository.findByOwner(userId).stream()
+                .map(x -> itemMapper.toItemDtoWithDates(x, userId, commentRepository.findByItemId(x.getId()),
+                        bookingRepository.findByItem_IdAndEndIsBeforeOrderByEndDesc(x.getId(), LocalDateTime.now()),
+                        bookingRepository.findByItem_IdAndStartIsAfterOrderByStartAsc(x.getId(), LocalDateTime.now())))
+                .collect(Collectors.toList());
     }
 
     @Override
-    public ItemDtoWithDates getItem(int id, LocalDateTime requestTime) {
+    public ItemDtoWithDates getItem(int id, int userId) {
         Item i = itemRepository.findById(id).orElseThrow();
-        return itemMapper.toItemDtoWithDates(i, commentRepository.findByItemId(i.getId()), bookingRepository.findByItem_IdAndEndIsBeforeOrderByEndDesc(i.getId(), requestTime), bookingRepository.findByItem_IdAndStartIsAfterOrderByStartAsc(i.getId(), requestTime));
+        return itemMapper.toItemDtoWithDates(i, userId, commentRepository.findByItemId(i.getId()),
+                bookingRepository.findByItem_IdAndEndIsBeforeOrderByEndDesc(i.getId(), LocalDateTime.now()),
+                bookingRepository.findByItem_IdAndStartIsAfterOrderByStartAsc(i.getId(), LocalDateTime.now()));
     }
 
     @Override
@@ -71,14 +77,17 @@ public class ItemServiceImpl implements ItemService {
         if (text.isBlank()) {
             return new ArrayList<>();
         }
-        return itemRepository.search(text).stream().map(x -> itemMapper.toItemDto(x, commentRepository.findByItemId(x.getId()))).collect(Collectors.toList());
+        return itemRepository.search(text).stream()
+                .map(x -> itemMapper.toItemDto(x, commentRepository.findByItemId(x.getId())))
+                .collect(Collectors.toList());
     }
 
     @Override
     public CommentDto comment(Comment comment) {
         comment.setItem(itemRepository.findById(comment.getItem().getId()).orElseThrow());
         comment.setAuthor(userRepository.findById(comment.getAuthor().getId()).orElseThrow());
-        if (bookingRepository.findByBooker_IdAndItem_IdIsAndStatusIsAndEndIsBefore(comment.getAuthor().getId(), comment.getItem().getId(), BookingStatus.APPROVED, LocalDateTime.now()).isEmpty()) {
+        if (bookingRepository.findByBooker_IdAndItem_IdIsAndStatusIsAndEndIsBefore(comment.getAuthor().getId(),
+                comment.getItem().getId(), BookingStatus.APPROVED, LocalDateTime.now()).isEmpty()) {
             throw new ValidationException("Пользователь не брал вещь в аренду");
         }
         return itemMapper.toCommentDto(commentRepository.save(comment));

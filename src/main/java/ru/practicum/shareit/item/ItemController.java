@@ -45,8 +45,8 @@ public class ItemController {
     }
 
     @GetMapping("/{id}")
-    public ItemDtoWithDates getItem(@PathVariable int id) {
-        return itemService.getItem(id, LocalDateTime.now());
+    public ItemDtoWithDates getItem(@PathVariable int id, @RequestHeader("X-Sharer-User-Id") int userId) {
+        return itemService.getItem(id, userId);
     }
 
     @DeleteMapping("/{id}")

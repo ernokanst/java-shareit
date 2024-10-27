@@ -2,7 +2,6 @@ package ru.practicum.shareit.item.service;
 
 import ru.practicum.shareit.item.dto.*;
 import ru.practicum.shareit.item.model.Comment;
-import java.time.LocalDateTime;
 import java.util.List;
 
 public interface ItemService {
@@ -12,7 +11,7 @@ public interface ItemService {
 
     List<ItemDtoWithDates> get(int userId);
 
-    ItemDtoWithDates getItem(int id, LocalDateTime requestTime);
+    ItemDtoWithDates getItem(int id, int userId);
 
     void deleteItem(int id);
 
