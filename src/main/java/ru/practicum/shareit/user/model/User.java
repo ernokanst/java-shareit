@@ -15,7 +15,7 @@ public class User implements Serializable {
     private Integer id;
     @Column(name = "name", nullable = false)
     private String name;
-    @Column(name = "email", nullable = false)
+    @Column(name = "email", nullable = false, unique = true)
     private String email;
 
     public User(Integer id) {
