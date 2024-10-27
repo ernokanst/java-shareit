@@ -8,7 +8,7 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ItemDto {
+public class ItemDtoWithDates {
     private Integer id;
     @NotBlank(message = "Название не может быть пустым")
     private String name;
@@ -19,4 +19,6 @@ public class ItemDto {
     private int owner;
     private int request;
     private List<CommentDto> comments;
+    private String lastBooking;
+    private String nextBooking;
 }

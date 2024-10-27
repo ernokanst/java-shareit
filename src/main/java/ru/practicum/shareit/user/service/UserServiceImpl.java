@@ -1,7 +1,9 @@
 package ru.practicum.shareit.user.service;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
-import ru.practicum.shareit.user.storage.UserStorage;
+import ru.practicum.shareit.exceptions.EmailExistsException;
+import ru.practicum.shareit.user.storage.UserRepository;
 import ru.practicum.shareit.user.dto.*;
 import ru.practicum.shareit.user.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,45 +12,53 @@ import java.util.stream.Collectors;
 
 @Service
 public class UserServiceImpl implements UserService {
-    private UserStorage userStorage;
+    private  UserRepository userRepository;
     private UserMapper userMapper;
 
     @Autowired
-    public UserServiceImpl(UserStorage userStorage, UserMapper userMapper) {
-        this.userStorage = userStorage;
+    public UserServiceImpl(UserRepository userRepository, UserMapper userMapper) {
+        this.userRepository = userRepository;
         this.userMapper = userMapper;
     }
 
     @Override
     public UserDto add(UserDto user) {
         User u = userMapper.toUser(user);
-        return userMapper.toUserDto(userStorage.add(u));
+        try {
+            return userMapper.toUserDto(userRepository.save(u));
+        } catch (DataIntegrityViolationException e) {
+            throw new EmailExistsException("Пользователь с указанной почтой уже существует", u);
+        }
     }
 
     @Override
     public UserDto update(UserDto user, int id) {
-        User newUser = userStorage.get(id).orElseThrow();
+        User newUser = userRepository.findById(id).orElseThrow();
         if (user.getName() != null) {
             newUser.setName(user.getName());
         }
         if (user.getEmail() != null) {
             newUser.setEmail(user.getEmail());
         }
-        return userMapper.toUserDto(userStorage.update(newUser, id));
+        try {
+            return userMapper.toUserDto(userRepository.save(newUser));
+        } catch (DataIntegrityViolationException e) {
+            throw new EmailExistsException("Пользователь с указанной почтой уже существует", newUser);
+        }
     }
 
     @Override
     public List<UserDto> get() {
-        return userStorage.get().stream().map(userMapper::toUserDto).collect(Collectors.toList());
+        return userRepository.findAll().stream().map(userMapper::toUserDto).collect(Collectors.toList());
     }
 
     @Override
     public UserDto getUser(int id) {
-        return userMapper.toUserDto(userStorage.get(id).orElseThrow());
+        return userMapper.toUserDto(userRepository.findById(id).orElseThrow());
     }
 
     @Override
     public void deleteUser(int id) {
-        userStorage.delete(id);
+        userRepository.deleteById(id);
     }
 }

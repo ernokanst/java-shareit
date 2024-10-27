@@ -8,8 +8,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.exceptions.NotFoundException;
-import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.dto.*;
+import ru.practicum.shareit.item.model.Comment;
+import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.service.ItemService;
+import ru.practicum.shareit.user.model.User;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -36,13 +40,13 @@ public class ItemController {
     }
 
     @GetMapping
-    public List<ItemDto> get(@RequestHeader("X-Sharer-User-Id") int userId) {
+    public List<ItemDtoWithDates> get(@RequestHeader("X-Sharer-User-Id") int userId) {
         return itemService.get(userId);
     }
 
     @GetMapping("/{id}")
-    public ItemDto getItem(@PathVariable int id) {
-        return itemService.getItem(id);
+    public ItemDtoWithDates getItem(@PathVariable int id) {
+        return itemService.getItem(id, LocalDateTime.now());
     }
 
     @DeleteMapping("/{id}")
@@ -53,6 +57,14 @@ public class ItemController {
     @GetMapping("/search")
     public List<ItemDto> search(@RequestParam String text) {
         return itemService.search(text);
+    }
+
+    @PostMapping("/{itemId}/comment")
+    public CommentDto comment(@RequestBody Comment comment, @PathVariable int itemId, @RequestHeader("X-Sharer-User-Id") int userId) {
+        comment.setAuthor(new User(userId));
+        comment.setItem(new Item(itemId));
+        comment.setCreated(LocalDateTime.now());
+        return itemService.comment(comment);
     }
 
     @ExceptionHandler(NotFoundException.class)
