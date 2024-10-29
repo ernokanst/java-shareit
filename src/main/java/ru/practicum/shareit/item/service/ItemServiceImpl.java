@@ -1,8 +1,10 @@
 package ru.practicum.shareit.item.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.BookingRepository;
+import ru.practicum.shareit.booking.dto.BookingMapper;
 import ru.practicum.shareit.booking.model.BookingStatus;
 import ru.practicum.shareit.exceptions.NotFoundException;
 import ru.practicum.shareit.exceptions.ValidationException;
@@ -22,20 +24,21 @@ public class ItemServiceImpl implements ItemService {
     private final ItemRepository itemRepository;
     private final UserRepository userRepository;
     private final ItemMapper itemMapper;
+    private final BookingMapper bookingMapper;
     private final CommentRepository commentRepository;
     private final BookingRepository bookingRepository;
 
     @Override
     public ItemDto add(ItemDto item, int userId) {
         Item i = itemMapper.toItem(item);
-        i.setOwner(userRepository.findById(userId).orElseThrow().getId());
+        i.setOwner(userRepository.findById(userId).orElseThrow());
         return itemMapper.toItemDto(itemRepository.save(i), commentRepository.findByItemId(i.getId()));
     }
 
     @Override
     public ItemDto update(ItemDto item, int userId) {
         Item newItem = itemRepository.findById(item.getId()).orElseThrow();
-        if (newItem.getOwner() != userId) {
+        if (newItem.getOwner().getId() != userId) {
             throw new NotFoundException("Пользователь не соответствует владельцу вещи", item);
         }
         if (item.getName() != null) {
@@ -52,10 +55,12 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public List<ItemDtoWithDates> get(int userId) {
-        return itemRepository.findByOwner(userId).stream()
+        return itemRepository.findByOwnerId(userId).stream()
                 .map(x -> itemMapper.toItemDtoWithDates(x, userId, commentRepository.findByItemId(x.getId()),
-                        bookingRepository.findByItem_IdAndEndIsBeforeOrderByEndDesc(x.getId(), LocalDateTime.now()),
-                        bookingRepository.findByItem_IdAndStartIsAfterOrderByStartAsc(x.getId(), LocalDateTime.now())))
+                        bookingMapper.toBookingDto(bookingRepository.findFirstByItem_IdAndEndIsBefore(x.getId(),
+                                LocalDateTime.now(), Sort.by(Sort.Direction.DESC, "end"))),
+                        bookingMapper.toBookingDto(bookingRepository.findFirstByItem_IdAndStartIsAfter(x.getId(),
+                                LocalDateTime.now(), Sort.by(Sort.Direction.ASC, "start")))))
                 .collect(Collectors.toList());
     }
 
@@ -63,8 +68,10 @@ public class ItemServiceImpl implements ItemService {
     public ItemDtoWithDates getItem(int id, int userId) {
         Item i = itemRepository.findById(id).orElseThrow();
         return itemMapper.toItemDtoWithDates(i, userId, commentRepository.findByItemId(i.getId()),
-                bookingRepository.findByItem_IdAndEndIsBeforeOrderByEndDesc(i.getId(), LocalDateTime.now()),
-                bookingRepository.findByItem_IdAndStartIsAfterOrderByStartAsc(i.getId(), LocalDateTime.now()));
+                bookingMapper.toBookingDto(bookingRepository.findFirstByItem_IdAndEndIsBefore(i.getId(),
+                        LocalDateTime.now(), Sort.by(Sort.Direction.DESC, "end"))),
+                bookingMapper.toBookingDto(bookingRepository.findFirstByItem_IdAndStartIsAfter(i.getId(),
+                        LocalDateTime.now(), Sort.by(Sort.Direction.ASC, "start"))));
     }
 
     @Override
@@ -83,9 +90,10 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public CommentDto comment(Comment comment) {
-        comment.setItem(itemRepository.findById(comment.getItem().getId()).orElseThrow());
-        comment.setAuthor(userRepository.findById(comment.getAuthor().getId()).orElseThrow());
+    public CommentDto comment(CommentDto c, int itemId, int userId, LocalDateTime createdAt) {
+        Comment comment = new Comment(c.getText(), createdAt);
+        comment.setItem(itemRepository.findById(itemId).orElseThrow());
+        comment.setAuthor(userRepository.findById(userId).orElseThrow());
         if (bookingRepository.findByBooker_IdAndItem_IdIsAndStatusIsAndEndIsBefore(comment.getAuthor().getId(),
                 comment.getItem().getId(), BookingStatus.APPROVED, LocalDateTime.now()).isEmpty()) {
             throw new ValidationException("Пользователь не брал вещь в аренду");

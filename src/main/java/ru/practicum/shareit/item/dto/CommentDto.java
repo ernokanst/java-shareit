@@ -1,7 +1,6 @@
 package ru.practicum.shareit.item.dto;
 
 import lombok.*;
-import ru.practicum.shareit.item.model.Item;
 
 @Data
 @AllArgsConstructor
@@ -10,6 +9,6 @@ public class CommentDto {
     Integer id;
     String text;
     String authorName;
-    Item item;
+    ItemDto item;
     String created;
 }

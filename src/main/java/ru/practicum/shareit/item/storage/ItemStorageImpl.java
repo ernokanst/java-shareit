@@ -14,7 +14,7 @@ public class ItemStorageImpl implements ItemStorage {
     @Override
     public Item add(Item item) {
         item.setId(currentId++);
-        int owner = item.getOwner();
+        int owner = item.getOwner().getId();
         if (!(itemsByUser.containsKey(owner))) {
             itemsByUser.put(owner, new HashSet<>());
         }

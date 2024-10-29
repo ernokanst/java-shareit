@@ -1,7 +1,7 @@
 package ru.practicum.shareit.item.service;
 
 import ru.practicum.shareit.item.dto.*;
-import ru.practicum.shareit.item.model.Comment;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface ItemService {
@@ -17,5 +17,5 @@ public interface ItemService {
 
     List<ItemDto> search(String query);
 
-    CommentDto comment(Comment comment);
+    CommentDto comment(CommentDto c, int itemId, int userId, LocalDateTime createdAt);
 }
