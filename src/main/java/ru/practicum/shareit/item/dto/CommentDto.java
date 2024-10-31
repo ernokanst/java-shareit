@@ -9,6 +9,5 @@ public class CommentDto {
     Integer id;
     String text;
     String authorName;
-    ItemDto item;
     String created;
 }

@@ -16,7 +16,5 @@ public class ItemDto {
     private String description;
     @NotNull(message = "Не указан статус доступности")
     private Boolean available;
-    private int owner;
-    private int request;
     private List<CommentDto> comments;
 }

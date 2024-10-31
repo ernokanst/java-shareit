@@ -7,11 +7,12 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import ru.practicum.shareit.user.model.User;
 import java.util.NoSuchElementException;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 
 @Slf4j
 @RestControllerAdvice
-public class ExceptionHandler {
-    @org.springframework.web.bind.annotation.ExceptionHandler(EmailExistsException.class)
+public class ExceptionsHandler {
+    @ExceptionHandler(EmailExistsException.class)
     public ResponseEntity<User> handleEmailExists(EmailExistsException exception) {
         log.error(exception.getMessage());
         return ResponseEntity
@@ -19,7 +20,7 @@ public class ExceptionHandler {
                 .body(exception.user);
     }
 
-    @org.springframework.web.bind.annotation.ExceptionHandler(NoSuchElementException.class)
+    @ExceptionHandler(NoSuchElementException.class)
     public ResponseEntity<String> handleNoSuchElement(NoSuchElementException exception) {
         log.error(exception.getMessage());
         return ResponseEntity
@@ -27,7 +28,7 @@ public class ExceptionHandler {
                 .body("Объект не найден");
     }
 
-    @org.springframework.web.bind.annotation.ExceptionHandler(NotFoundException.class)
+    @ExceptionHandler(NotFoundException.class)
     public ResponseEntity<Object> handleNotFound(NotFoundException exception) {
         log.error(exception.getMessage());
         return ResponseEntity
@@ -35,7 +36,7 @@ public class ExceptionHandler {
                 .body(exception.item);
     }
 
-    @org.springframework.web.bind.annotation.ExceptionHandler(ValidationException.class)
+    @ExceptionHandler(ValidationException.class)
     public ResponseEntity<Object> handleValidation(ValidationException exception) {
         log.error(exception.getMessage());
         if (exception.getFailedObject() == null) {
@@ -49,7 +50,7 @@ public class ExceptionHandler {
         }
     }
 
-    @org.springframework.web.bind.annotation.ExceptionHandler(MethodArgumentNotValidException.class)
+    @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException exception) {
         log.error(exception.getMessage());
         return ResponseEntity
@@ -57,7 +58,7 @@ public class ExceptionHandler {
                 .body(exception.getBody());
     }
 
-    @org.springframework.web.bind.annotation.ExceptionHandler(Exception.class)
+    @ExceptionHandler(Exception.class)
     public ResponseEntity<String> handleException(Exception exception) {
         exception.printStackTrace();
         return ResponseEntity

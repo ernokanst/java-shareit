@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.user.dto.UserDto;
+import ru.practicum.shareit.user.dto.UserUpdateDto;
 import ru.practicum.shareit.user.service.UserService;
 import java.util.List;
 
@@ -26,7 +27,7 @@ public class UserController {
     }
 
     @PatchMapping("/{id}")
-    public UserDto update(@RequestBody UserDto user, @PathVariable int id, HttpServletResponse response) {
+    public UserDto update(@RequestBody @Valid UserUpdateDto user, @PathVariable int id, HttpServletResponse response) {
         return userService.update(user, id);
     }
 

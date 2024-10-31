@@ -32,7 +32,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDto update(UserDto user, int id) {
+    public UserDto update(UserUpdateDto user, int id) {
         User newUser = userRepository.findById(id).orElseThrow();
         if (user.getName() != null) {
             newUser.setName(user.getName());

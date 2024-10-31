@@ -17,7 +17,7 @@ public class Comment implements Serializable {
     private Integer id;
     @Column(name = "text", nullable = false)
     private String text;
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "author_id", nullable = false)
     private User author;
     @ManyToOne(fetch = FetchType.LAZY)

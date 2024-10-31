@@ -5,6 +5,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.BookingRepository;
 import ru.practicum.shareit.booking.dto.BookingMapper;
+import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.BookingStatus;
 import ru.practicum.shareit.exceptions.NotFoundException;
 import ru.practicum.shareit.exceptions.ValidationException;
@@ -55,12 +56,12 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public List<ItemDtoWithDates> get(int userId) {
+        Map<Integer, List<Comment>> comments = commentRepository.findAllGroupById(userId);
+        Map<Integer, List<Booking>> bookings = bookingRepository.findLastAndNext(userId);
         return itemRepository.findByOwnerId(userId).stream()
-                .map(x -> itemMapper.toItemDtoWithDates(x, userId, commentRepository.findByItemId(x.getId()),
-                        bookingMapper.toBookingDto(bookingRepository.findFirstByItem_IdAndEndIsBefore(x.getId(),
-                                LocalDateTime.now(), Sort.by(Sort.Direction.DESC, "end"))),
-                        bookingMapper.toBookingDto(bookingRepository.findFirstByItem_IdAndStartIsAfter(x.getId(),
-                                LocalDateTime.now(), Sort.by(Sort.Direction.ASC, "start")))))
+                .map(x -> itemMapper.toItemDtoWithDates(x, userId, comments.get(x.getId()),
+                        bookings.get(x.getId()) != null ? bookings.get(x.getId()).getFirst() : null,
+                        bookings.get(x.getId()) != null ? bookings.get(x.getId()).getLast() : null))
                 .collect(Collectors.toList());
     }
 
@@ -68,10 +69,10 @@ public class ItemServiceImpl implements ItemService {
     public ItemDtoWithDates getItem(int id, int userId) {
         Item i = itemRepository.findById(id).orElseThrow();
         return itemMapper.toItemDtoWithDates(i, userId, commentRepository.findByItemId(i.getId()),
-                bookingMapper.toBookingDto(bookingRepository.findFirstByItem_IdAndEndIsBefore(i.getId(),
-                        LocalDateTime.now(), Sort.by(Sort.Direction.DESC, "end"))),
-                bookingMapper.toBookingDto(bookingRepository.findFirstByItem_IdAndStartIsAfter(i.getId(),
-                        LocalDateTime.now(), Sort.by(Sort.Direction.ASC, "start"))));
+                bookingRepository.findFirstByItem_IdAndEndIsBefore(i.getId(),
+                        LocalDateTime.now(), Sort.by(Sort.Direction.DESC, "end")),
+                bookingRepository.findFirstByItem_IdAndStartIsAfter(i.getId(),
+                        LocalDateTime.now(), Sort.by(Sort.Direction.ASC, "start")));
     }
 
     @Override

@@ -23,8 +23,6 @@ public class Item implements Serializable {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "owner_id", nullable = false)
     private User owner;
-    @Column(name = "request_id")
-    private Integer request;
 
     public Item(Integer id) {
         this.id = id;

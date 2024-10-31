@@ -12,8 +12,6 @@ public class ItemDtoWithDates {
     private String name;
     private String description;
     private Boolean available;
-    private int owner;
-    private int request;
     private List<CommentDto> comments;
     private BookingDto lastBooking;
     private BookingDto nextBooking;

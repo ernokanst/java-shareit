@@ -17,7 +17,6 @@ public class BookingMapper {
     private final UserMapper userMapper;
 
     public BookingDto toBookingDto(Booking booking) {
-        if (booking == null) return null;
         return new BookingDto(
                 booking.getId(),
                 booking.getStart(),
