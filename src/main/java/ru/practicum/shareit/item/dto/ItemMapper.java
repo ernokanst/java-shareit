@@ -1,20 +1,34 @@
 package ru.practicum.shareit.item.dto;
 
 import org.springframework.stereotype.Component;
+import ru.practicum.shareit.booking.dto.BookingDto;
+import ru.practicum.shareit.booking.model.Booking;
+import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.request.model.ItemRequest;
-import ru.practicum.shareit.user.model.User;
+import java.util.ArrayList;
+import java.util.List;
 
 @Component
 public class ItemMapper {
-    public ItemDto toItemDto(Item item) {
+    public ItemDto toItemDto(Item item, List<Comment> comments) {
         return new ItemDto(
                 item.getId(),
                 item.getName(),
                 item.getDescription(),
                 item.isAvailable(),
-                item.getOwner() != null ? item.getOwner().getId() : 0,
-                item.getRequest() != null ? item.getRequest().getId() : 0
+                comments.stream().map(this::toCommentDto).toList()
+        );
+    }
+
+    public ItemDtoWithDates toItemDtoWithDates(Item item, int userId, List<Comment> comments, Booking last, Booking next) {
+        return new ItemDtoWithDates(
+                item.getId(),
+                item.getName(),
+                item.getDescription(),
+                item.isAvailable(),
+                comments != null ? comments.stream().map(this::toCommentDto).toList() : new ArrayList<>(),
+                item.getOwner().getId() == userId ? toBookingDto(last) : null,
+                item.getOwner().getId() == userId ? toBookingDto(next) : null
         );
     }
 
@@ -24,8 +38,27 @@ public class ItemMapper {
                 item.getName(),
                 item.getDescription(),
                 item.getAvailable(),
-                new User(item.getOwner()),
-                new ItemRequest(item.getRequest())
+                null
+        );
+    }
+
+    public CommentDto toCommentDto(Comment comment) {
+        return new CommentDto(
+                comment.getId(),
+                comment.getText(),
+                comment.getAuthor().getName(),
+                comment.getCreated().toString());
+    }
+
+    public BookingDto toBookingDto(Booking booking) {
+        if (booking == null) return null;
+        return new BookingDto(
+                booking.getId(),
+                booking.getStart(),
+                booking.getEnd(),
+                null,
+                null,
+                booking.getStatus().toString()
         );
     }
 }

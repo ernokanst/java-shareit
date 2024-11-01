@@ -1,16 +1,24 @@
 package ru.practicum.shareit.user.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
+import jakarta.persistence.*;
+import lombok.*;
+import java.io.Serializable;
 
 @Data
 @AllArgsConstructor
-public class User {
-    private int id;
+@NoArgsConstructor
+@Entity
+@Table(name = "users")
+public class User implements Serializable {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
+    @Column(name = "name", nullable = false)
     private String name;
+    @Column(name = "email", nullable = false, unique = true)
     private String email;
 
-    public User(int id) {
+    public User(Integer id) {
         this.id = id;
     }
 }
