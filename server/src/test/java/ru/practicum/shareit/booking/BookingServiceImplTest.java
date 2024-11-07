@@ -102,6 +102,8 @@ public class BookingServiceImplTest {
         assertThat(result, (Every.everyItem(HasPropertyWithValue.hasProperty("booker", Is.is(user2)))));
         result = bookingService.getAll(BookingState.PAST, user2.getId());
         assertThat(result, hasSize(0));
+        result = bookingService.getAll(BookingState.CURRENT, user2.getId());
+        assertThat(result, hasSize(0));
         result = bookingService.getAll(BookingState.FUTURE, user2.getId());
         assertThat(result, hasSize(2));
         result = bookingService.getAll(BookingState.REJECTED, user2.getId());
@@ -132,6 +134,8 @@ public class BookingServiceImplTest {
         assertThat(result, hasSize(4));
         assertThat(result, (Every.everyItem(HasPropertyWithValue.hasProperty("item", Is.is(item)))));
         result = bookingService.getAllOwner(BookingState.PAST, user1.getId());
+        assertThat(result, hasSize(0));
+        result = bookingService.getAllOwner(BookingState.CURRENT, user1.getId());
         assertThat(result, hasSize(0));
         result = bookingService.getAllOwner(BookingState.FUTURE, user1.getId());
         assertThat(result, hasSize(4));

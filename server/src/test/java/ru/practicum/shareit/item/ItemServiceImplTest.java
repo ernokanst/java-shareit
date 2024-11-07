@@ -55,7 +55,7 @@ public class ItemServiceImplTest {
     }
 
     @Test
-    void testAddGet() {
+    void testAddGetDelete() {
         ItemDto resultService = itemService.add(item1, user1.getId());
         item1.setId(resultService.getId());
         itemWithDates1.setId(resultService.getId());
@@ -70,17 +70,19 @@ public class ItemServiceImplTest {
         assertThat(itemService.get(user1.getId()), hasSize(2));
         assertThat(itemService.get(user2.getId()), hasSize(0));
         assertThat(itemService.get(user1.getId()), equalTo(List.of(itemWithDates1, itemWithDates2)));
+        itemService.deleteItem(itemWithDates1.getId());
+        assertThat(itemService.get(user1.getId()), equalTo(List.of(itemWithDates2)));
     }
 
     @Test
     void testUpdate() {
         item1 = itemService.add(item1, user1.getId());
-        ItemDto newItem = new ItemDto(item1.getId(), null, "New description", false, null, null);
+        ItemDto newItem = new ItemDto(item1.getId(), "New name", "New description", false, null, null);
         assertThrows(NotFoundException.class, () -> itemService.update(newItem, user2.getId()));
         itemService.update(newItem, user1.getId());
         TypedQuery<Item> query = em.createQuery("Select i from Item i where i.id = :id", Item.class);
         ItemDto resultQuery = itemMapper.toItemDto(query.setParameter("id", item1.getId()).getSingleResult(), new ArrayList<>());
-        assertThat(resultQuery.getName(), equalTo(item1.getName()));
+        assertThat(resultQuery.getName(), equalTo(newItem.getName()));
         assertThat(resultQuery.getDescription(), equalTo(newItem.getDescription()));
         assertThat(resultQuery.getAvailable(), equalTo(newItem.getAvailable()));
     }
