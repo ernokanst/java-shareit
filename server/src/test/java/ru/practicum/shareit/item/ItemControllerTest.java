@@ -6,14 +6,20 @@ import org.mockito.ArgumentMatchers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.core.MethodParameter;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.validation.BindException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import ru.practicum.shareit.booking.dto.BookingDto;
+import ru.practicum.shareit.exceptions.NotFoundException;
 import ru.practicum.shareit.item.dto.*;
 import ru.practicum.shareit.item.service.ItemService;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.NoSuchElementException;
+
 import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
@@ -190,5 +196,30 @@ public class ItemControllerTest {
                 .andExpect(jsonPath("$.text", is(comment.getText()), String.class))
                 .andExpect(jsonPath("$.authorName", is(comment.getAuthorName()), String.class))
                 .andExpect(jsonPath("$.created", is(comment.getCreated()), String.class));
+    }
+
+    @Test
+    void testUpdateNotOwner() throws Exception {
+        when(itemService.update(ArgumentMatchers.any(ItemDto.class), anyInt())).thenThrow(new NotFoundException("Пользователь не соответствует владельцу вещи", item));
+
+        mvc.perform(patch("/items/1")
+                        .header("X-Sharer-User-Id", 2)
+                        .content(mapper.writeValueAsString(item))
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void testNotFound() throws Exception {
+        when(itemService.getItem(anyInt(), anyInt())).thenThrow(NoSuchElementException.class);
+
+        mvc.perform(get("/items/1")
+                        .header("X-Sharer-User-Id", 1)
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
     }
 }

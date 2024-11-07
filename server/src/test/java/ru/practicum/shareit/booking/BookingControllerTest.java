@@ -9,6 +9,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import ru.practicum.shareit.booking.dto.*;
 import ru.practicum.shareit.booking.service.BookingService;
+import ru.practicum.shareit.exceptions.ValidationException;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.user.dto.UserDto;
 import java.nio.charset.StandardCharsets;
@@ -155,5 +156,18 @@ public class BookingControllerTest {
                 .andExpect(jsonPath("$[0].booker.id", is(booking.getBooker().getId())))
                 .andExpect(jsonPath("$[0].booker.email", is(booking.getBooker().getEmail())))
                 .andExpect(jsonPath("$[0].status", is(booking.getStatus())));
+    }
+
+    @Test
+    void testApproveNotOwner() throws Exception {
+        when(bookingService.approve(anyInt(), anyInt(), anyBoolean())).thenThrow(new ValidationException("Пользователь не является владельцем вещи", booking));
+
+        mvc.perform(patch("/bookings/1")
+                        .header("X-Sharer-User-Id", 1)
+                        .param("approved", "true")
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
     }
 }

@@ -102,4 +102,17 @@ public class ItemRequestControllerTest {
                 .andExpect(jsonPath("$.requester", is(request.getRequester()), Integer.class))
                 .andExpect(jsonPath("$.created", is(request.getCreated().toString()), String.class));
     }
+
+    @Test
+    void testException() throws Exception {
+        when(requestService.create(any(ItemRequestDto.class), anyInt())).thenThrow(RuntimeException.class);
+
+        mvc.perform(post("/requests")
+                        .header("X-Sharer-User-Id", 1)
+                        .content(mapper.writeValueAsString(request))
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isInternalServerError());
+    }
 }

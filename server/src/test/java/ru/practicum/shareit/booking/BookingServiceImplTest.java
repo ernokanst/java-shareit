@@ -14,6 +14,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import ru.practicum.shareit.booking.dto.*;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.service.BookingService;
+import ru.practicum.shareit.exceptions.NotFoundException;
 import ru.practicum.shareit.exceptions.ValidationException;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.service.ItemService;
@@ -43,13 +44,7 @@ public class BookingServiceImplTest {
 
     private BookingCreateDto bookingCreate;
 
-    private final BookingDto booking = new BookingDto(
-            1,
-            LocalDateTime.parse("2025-01-01T12:34:56"),
-            LocalDateTime.parse("2025-01-03T11:11:11"),
-            item,
-            user2,
-            "WAITING");
+    private BookingDto booking;
 
     @BeforeEach
     void setup() {
@@ -64,21 +59,29 @@ public class BookingServiceImplTest {
                 item.getId(),
                 null,
                 null);
+        booking = new BookingDto(
+                1,
+                LocalDateTime.parse("2025-01-01T12:34:56"),
+                LocalDateTime.parse("2025-01-03T11:11:11"),
+                item,
+                user2,
+                "WAITING");
     }
 
     @Test
     void testAddGetApprove() {
         BookingDto resultService = bookingService.add(bookingCreate, user2.getId());
+        booking.setId(resultService.getId());
         TypedQuery<Booking> query = em.createQuery("Select b from Booking b where b.id = :id", Booking.class);
-        BookingDto resultQuery = bookingMapper.toBookingDto(query.setParameter("id", 1).getSingleResult());
+        BookingDto resultQuery = bookingMapper.toBookingDto(query.setParameter("id", resultService.getId()).getSingleResult());
         assertThat(resultQuery, equalTo(resultService));
         assertThat(resultQuery, equalTo(booking));
         assertThat(resultQuery.getBooker(), equalTo(user2));
         assertThat(resultQuery.getItem(), equalTo(item));
-        assertThat(resultQuery, equalTo(bookingService.get(1, user1.getId())));
-        assertThrows(ValidationException.class, () -> bookingService.get(1, user3.getId()));
-        assertThrows(ValidationException.class, () -> bookingService.approve(user2.getId(), 1, true));
-        assertThat(bookingService.approve(user1.getId(), 1, false).getStatus(), equalTo("REJECTED"));
+        assertThat(resultQuery, equalTo(bookingService.get(booking.getId(), user1.getId())));
+        assertThrows(ValidationException.class, () -> bookingService.get(booking.getId(), user3.getId()));
+        assertThrows(ValidationException.class, () -> bookingService.approve(user2.getId(), booking.getId(), true));
+        assertThat(bookingService.approve(user1.getId(), booking.getId(), false).getStatus(), equalTo("REJECTED"));
     }
 
     @Test
@@ -91,6 +94,7 @@ public class BookingServiceImplTest {
         bookingService.approve(user1.getId(), b1, true);
         bookingService.approve(user1.getId(), b2, false);
         bookingService.approve(user1.getId(), b3, true);
+        assertThrows(NotFoundException.class, () -> bookingService.getAll(BookingState.ALL, 9999));
         result = bookingService.getAll(BookingState.ALL, user1.getId());
         assertThat(result, hasSize(0));
         result = bookingService.getAll(BookingState.ALL, user2.getId());
@@ -123,6 +127,7 @@ public class BookingServiceImplTest {
         bookingService.approve(user1.getId(), b1, true);
         bookingService.approve(user1.getId(), b2, false);
         bookingService.approve(user1.getId(), b3, true);
+        assertThrows(NotFoundException.class, () -> bookingService.getAllOwner(BookingState.ALL, 9999));
         result = bookingService.getAllOwner(BookingState.ALL, user1.getId());
         assertThat(result, hasSize(4));
         assertThat(result, (Every.everyItem(HasPropertyWithValue.hasProperty("item", Is.is(item)))));
