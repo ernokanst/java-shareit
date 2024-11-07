@@ -1,7 +1,6 @@
 package ru.practicum.shareit.item;
 
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -22,7 +21,7 @@ public class ItemController {
     }
 
     @PostMapping
-    public ItemDto add(@RequestBody @Valid ItemDto item, @RequestHeader("X-Sharer-User-Id") int userId, HttpServletResponse response) {
+    public ItemDto add(@RequestBody ItemDto item, @RequestHeader("X-Sharer-User-Id") int userId, HttpServletResponse response) {
         return itemService.add(item, userId);
     }
 

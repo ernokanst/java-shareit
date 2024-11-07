@@ -1,7 +1,6 @@
 package ru.practicum.shareit.user;
 
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -22,12 +21,12 @@ public class UserController {
     }
 
     @PostMapping
-    public UserDto add(@RequestBody @Valid UserDto user, HttpServletResponse response) {
+    public UserDto add(@RequestBody UserDto user, HttpServletResponse response) {
         return userService.add(user);
     }
 
     @PatchMapping("/{id}")
-    public UserDto update(@RequestBody @Valid UserUpdateDto user, @PathVariable int id, HttpServletResponse response) {
+    public UserDto update(@RequestBody UserUpdateDto user, @PathVariable int id, HttpServletResponse response) {
         return userService.update(user, id);
     }
 

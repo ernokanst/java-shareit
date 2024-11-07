@@ -13,7 +13,10 @@ import ru.practicum.shareit.item.storage.ItemRepository;
 import ru.practicum.shareit.user.storage.UserRepository;
 import ru.practicum.shareit.item.model.Item;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -106,36 +109,59 @@ public class BookingServiceImpl implements BookingService {
         List<Booking> found;
         switch (state) {
             case CURRENT -> {
-                found = bookingRepository.findByItemOwner_IdAndStartIsBeforeAndEndIsAfter(userId,
+                found = bookingRepository.findByItemOwnerIdAndStartIsBeforeAndEndIsAfter(userId,
                         LocalDateTime.now(), LocalDateTime.now(), Sort.by(Sort.Direction.DESC, "start"));
                 break;
             }
             case PAST -> {
-                found = bookingRepository.findByItemOwner_IdAndEndIsBefore(userId, LocalDateTime.now(),
+                found = bookingRepository.findByItemOwnerIdAndEndIsBefore(userId, LocalDateTime.now(),
                         Sort.by(Sort.Direction.DESC, "start"));
                 break;
             }
             case FUTURE -> {
-                found = bookingRepository.findByItemOwner_IdAndStartIsAfter(userId, LocalDateTime.now(),
+                found = bookingRepository.findByItemOwnerIdAndStartIsAfter(userId, LocalDateTime.now(),
                         Sort.by(Sort.Direction.DESC, "start"));
                 break;
             }
             case WAITING -> {
-                found = bookingRepository.findByItemOwner_IdAndStatusIs(userId, BookingStatus.WAITING,
+                found = bookingRepository.findByItemOwnerIdAndStatusIs(userId, BookingStatus.WAITING,
                         Sort.by(Sort.Direction.DESC, "start"));
                 break;
             }
             case REJECTED -> {
-                found = bookingRepository.findByItemOwner_IdAndStatusIs(userId, BookingStatus.REJECTED,
+                found = bookingRepository.findByItemOwnerIdAndStatusIs(userId, BookingStatus.REJECTED,
                         Sort.by(Sort.Direction.DESC, "start"));
                 break;
             }
             default -> {
-                found = bookingRepository.findByItemOwner_Id(userId, Sort.by(Sort.Direction.DESC,
+                found = bookingRepository.findByItemOwnerId(userId, Sort.by(Sort.Direction.DESC,
                         "start"));
                 break;
             }
         }
         return found.stream().map(bookingMapper::toBookingDto).toList();
+    }
+
+    @Override
+    public Map<Integer, List<Booking>> findLastAndNext(int id) {
+        List<Booking> bookings = bookingRepository.findByItemOwnerId(id);
+        Map<Integer, List<Booking>> result = new HashMap<>();
+        for (Booking b : bookings) {
+            int bId = b.getItem().getId();
+            if (!(result.containsKey(bId))) {
+                result.put(bId, new ArrayList<>(2));
+            }
+            if (b.getEnd().isBefore(LocalDateTime.now())) {
+                if (result.get(bId).getFirst() == null || result.get(bId).getFirst().getEnd().isBefore(b.getEnd())) {
+                    result.get(bId).addFirst(b);
+                }
+            }
+            if (b.getStart().isAfter(LocalDateTime.now())) {
+                if (result.get(bId).getLast() == null || result.get(bId).getLast().getStart().isAfter(b.getStart())) {
+                    result.get(bId).addLast(b);
+                }
+            }
+        }
+        return result;
     }
 }

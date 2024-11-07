@@ -1,6 +1,5 @@
 package ru.practicum.shareit.booking;
 
-import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -20,7 +19,7 @@ public class BookingController {
     }
 
     @PostMapping
-    public BookingDto add(@RequestBody @Valid BookingCreateDto booking, @RequestHeader("X-Sharer-User-Id") int userId) {
+    public BookingDto add(@RequestBody BookingCreateDto booking, @RequestHeader("X-Sharer-User-Id") int userId) {
         return bookingService.add(booking, userId);
     }
 

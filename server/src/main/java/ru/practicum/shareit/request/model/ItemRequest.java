@@ -17,7 +17,7 @@ public class ItemRequest implements Serializable {
     private Integer id;
     @Column(name = "description", nullable = false)
     private String description;
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "requestor_id", nullable = false)
     private User requester;
     @Column(name = "created", nullable = false)

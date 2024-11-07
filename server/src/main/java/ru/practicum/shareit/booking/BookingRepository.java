@@ -19,16 +19,16 @@ public interface BookingRepository extends JpaRepository<Booking, Integer> {
 
     List<Booking> findByBooker_IdAndStatusIs(Integer bookerId, BookingStatus status, Sort sort);
 
-    List<Booking> findByItemOwner_Id(Integer ownerId, Sort sort);
+    List<Booking> findByItemOwnerId(Integer ownerId, Sort sort);
 
-    List<Booking> findByItemOwner_IdAndEndIsBefore(Integer ownerId, LocalDateTime end, Sort sort);
+    List<Booking> findByItemOwnerIdAndEndIsBefore(Integer ownerId, LocalDateTime end, Sort sort);
 
-    List<Booking> findByItemOwner_IdAndStartIsAfter(Integer ownerId, LocalDateTime start, Sort sort);
+    List<Booking> findByItemOwnerIdAndStartIsAfter(Integer ownerId, LocalDateTime start, Sort sort);
 
-    List<Booking> findByItemOwner_IdAndStartIsBeforeAndEndIsAfter(Integer ownerId, LocalDateTime start,
+    List<Booking> findByItemOwnerIdAndStartIsBeforeAndEndIsAfter(Integer ownerId, LocalDateTime start,
                                                                   LocalDateTime end, Sort sort);
 
-    List<Booking> findByItemOwner_IdAndStatusIs(Integer ownerId, BookingStatus status, Sort sort);
+    List<Booking> findByItemOwnerIdAndStatusIs(Integer ownerId, BookingStatus status, Sort sort);
 
     Booking findFirstByItem_IdAndEndIsBefore(Integer itemId, LocalDateTime end, Sort sort);
 
@@ -38,26 +38,4 @@ public interface BookingRepository extends JpaRepository<Booking, Integer> {
                                                                        BookingStatus status, LocalDateTime end);
 
     List<Booking> findByItemOwnerId(int id);
-
-    default Map<Integer, List<Booking>> findLastAndNext(int id) {
-        List<Booking> bookings = findByItemOwnerId(id);
-        Map<Integer, List<Booking>> result = new HashMap<>();
-        for (Booking b : bookings) {
-            int bId = b.getItem().getId();
-            if (!(result.containsKey(bId))) {
-                result.put(bId, new ArrayList<>(2));
-            }
-            if (b.getEnd().isBefore(LocalDateTime.now())) {
-                if (result.get(bId).getFirst() == null || result.get(bId).getFirst().getEnd().isBefore(b.getEnd())) {
-                    result.get(bId).addFirst(b);
-                }
-            }
-            if (b.getStart().isAfter(LocalDateTime.now())) {
-                if (result.get(bId).getLast() == null || result.get(bId).getLast().getStart().isAfter(b.getStart())) {
-                    result.get(bId).addLast(b);
-                }
-            }
-        }
-        return result;
-    }
 }

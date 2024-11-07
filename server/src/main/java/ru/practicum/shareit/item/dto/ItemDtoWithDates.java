@@ -15,5 +15,5 @@ public class ItemDtoWithDates {
     private List<CommentDto> comments;
     private BookingDto lastBooking;
     private BookingDto nextBooking;
-    private Integer request;
+    private Integer requestId;
 }

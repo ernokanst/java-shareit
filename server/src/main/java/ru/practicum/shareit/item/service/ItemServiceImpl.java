@@ -7,6 +7,7 @@ import ru.practicum.shareit.booking.BookingRepository;
 import ru.practicum.shareit.booking.dto.BookingMapper;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.BookingStatus;
+import ru.practicum.shareit.booking.service.BookingService;
 import ru.practicum.shareit.exceptions.NotFoundException;
 import ru.practicum.shareit.exceptions.ValidationException;
 import ru.practicum.shareit.item.model.Comment;
@@ -28,6 +29,7 @@ public class ItemServiceImpl implements ItemService {
     private final BookingMapper bookingMapper;
     private final CommentRepository commentRepository;
     private final BookingRepository bookingRepository;
+    private final BookingService bookingService;
 
     @Override
     public ItemDto add(ItemDto item, int userId) {
@@ -56,8 +58,8 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public List<ItemDtoWithDates> get(int userId) {
-        Map<Integer, List<Comment>> comments = commentRepository.findAllGroupById(userId);
-        Map<Integer, List<Booking>> bookings = bookingRepository.findLastAndNext(userId);
+        Map<Integer, List<Comment>> comments = findAllGroupById(userId);
+        Map<Integer, List<Booking>> bookings = bookingService.findLastAndNext(userId);
         return itemRepository.findByOwnerId(userId).stream()
                 .map(x -> itemMapper.toItemDtoWithDates(x, userId, comments.get(x.getId()),
                         bookings.get(x.getId()) != null ? bookings.get(x.getId()).getFirst() : null,
@@ -100,5 +102,17 @@ public class ItemServiceImpl implements ItemService {
             throw new ValidationException("Пользователь не брал вещь в аренду");
         }
         return itemMapper.toCommentDto(commentRepository.save(comment));
+    }
+
+    private Map<Integer, List<Comment>> findAllGroupById(int userId) {
+        List<Comment> allComments = commentRepository.findByItemOwnerId(userId);
+        Map<Integer, List<Comment>> result = new HashMap<>();
+        for (Comment c : allComments) {
+            if (!(result.containsKey(c.getItem().getId()))) {
+                result.put(c.getItem().getId(), new ArrayList<>());
+            }
+            result.get(c.getItem().getId()).add(c);
+        }
+        return result;
     }
 }
