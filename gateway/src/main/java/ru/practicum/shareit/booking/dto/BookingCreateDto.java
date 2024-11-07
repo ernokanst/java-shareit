@@ -2,14 +2,14 @@ package ru.practicum.shareit.booking.dto;
 
 import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.FutureOrPresent;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import ru.practicum.shareit.validation.DateRange;
 
 import java.time.LocalDateTime;
 
-@Data
+@Getter
+@Setter
+@ToString
 @AllArgsConstructor
 @NoArgsConstructor
 @DateRange(before = "start", after = "end")

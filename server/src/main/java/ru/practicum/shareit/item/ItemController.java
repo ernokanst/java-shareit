@@ -1,44 +1,43 @@
 package ru.practicum.shareit.item;
 
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.item.dto.*;
 import ru.practicum.shareit.item.service.ItemService;
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Slf4j
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("/items")
 public class ItemController {
-    ItemService itemService;
+    private final ItemService itemService;
 
-    @Autowired
-    public ItemController(ItemService itemService) {
-        this.itemService = itemService;
-    }
+    private final String USER_ID_HEADER = "X-Sharer-User-Id";
 
     @PostMapping
-    public ItemDto add(@RequestBody ItemDto item, @RequestHeader("X-Sharer-User-Id") int userId, HttpServletResponse response) {
-        return itemService.add(item, userId);
+    public ResponseEntity<Object> add(@RequestBody ItemDto item, @RequestHeader(USER_ID_HEADER) int userId, HttpServletResponse response) {
+        return new ResponseEntity<>(itemService.add(item, userId), HttpStatus.OK);
     }
 
     @PatchMapping("/{id}")
-    public ItemDto update(@RequestBody ItemDto item, @PathVariable int id, @RequestHeader("X-Sharer-User-Id") int userId, HttpServletResponse response) {
+    public ResponseEntity<Object> update(@RequestBody ItemDto item, @PathVariable int id, @RequestHeader(USER_ID_HEADER) int userId, HttpServletResponse response) {
         item.setId(id);
-        return itemService.update(item, userId);
+        return new ResponseEntity<>(itemService.update(item, userId), HttpStatus.OK);
     }
 
     @GetMapping
-    public List<ItemDtoWithDates> get(@RequestHeader("X-Sharer-User-Id") int userId) {
-        return itemService.get(userId);
+    public ResponseEntity<Object> get(@RequestHeader(USER_ID_HEADER) int userId) {
+        return new ResponseEntity<>(itemService.get(userId), HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
-    public ItemDtoWithDates getItem(@PathVariable int id, @RequestHeader("X-Sharer-User-Id") int userId) {
-        return itemService.getItem(id, userId);
+    public ResponseEntity<Object> getItem(@PathVariable int id, @RequestHeader(USER_ID_HEADER) int userId) {
+        return new ResponseEntity<>(itemService.getItem(id, userId), HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
@@ -47,12 +46,12 @@ public class ItemController {
     }
 
     @GetMapping("/search")
-    public List<ItemDto> search(@RequestParam String text) {
-        return itemService.search(text);
+    public ResponseEntity<Object> search(@RequestParam String text) {
+        return new ResponseEntity<>(itemService.search(text), HttpStatus.OK);
     }
 
     @PostMapping("/{itemId}/comment")
-    public CommentDto comment(@RequestBody CommentDto comment, @PathVariable int itemId, @RequestHeader("X-Sharer-User-Id") int userId) {
-        return itemService.comment(comment, itemId, userId, LocalDateTime.now());
+    public ResponseEntity<Object> comment(@RequestBody CommentDto comment, @PathVariable int itemId, @RequestHeader(USER_ID_HEADER) int userId) {
+        return new ResponseEntity<>(itemService.comment(comment, itemId, userId, LocalDateTime.now()), HttpStatus.OK);
     }
 }

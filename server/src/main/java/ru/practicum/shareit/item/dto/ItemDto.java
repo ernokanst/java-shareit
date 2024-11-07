@@ -3,7 +3,9 @@ package ru.practicum.shareit.item.dto;
 import lombok.*;
 import java.util.List;
 
-@Data
+@Getter
+@Setter
+@ToString
 @AllArgsConstructor
 @NoArgsConstructor
 public class ItemDto {

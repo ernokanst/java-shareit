@@ -6,7 +6,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
 
@@ -14,17 +13,18 @@ import ru.practicum.shareit.request.dto.ItemRequestDto;
 @RequestMapping(path = "/requests")
 @RequiredArgsConstructor
 @Slf4j
-@Validated
 public class ItemRequestController {
     private final ItemRequestClient requestClient;
 
+    private final String USER_ID_HEADER = "X-Sharer-User-Id";
+
     @PostMapping
-    public ResponseEntity<Object> create(@RequestBody @Valid ItemRequestDto request, @RequestHeader("X-Sharer-User-Id") int userId, HttpServletResponse response) {
+    public ResponseEntity<Object> create(@RequestBody @Valid ItemRequestDto request, @RequestHeader(USER_ID_HEADER) int userId, HttpServletResponse response) {
         return requestClient.create(request, userId);
     }
 
     @GetMapping
-    public ResponseEntity<Object> getFromUser(@RequestHeader("X-Sharer-User-Id") int userId) {
+    public ResponseEntity<Object> getFromUser(@RequestHeader(USER_ID_HEADER) int userId) {
         return requestClient.getFromUser(userId);
     }
 

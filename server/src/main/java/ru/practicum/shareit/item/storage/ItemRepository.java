@@ -10,6 +10,8 @@ public interface ItemRepository extends JpaRepository<Item, Integer> {
 
     List<Item> findByRequestId(int requestId);
 
+    List<Item> findByRequestIdNotNull();
+
     @Query(" SELECT i FROM Item i " +
             "WHERE (UPPER(i.name) LIKE UPPER(concat('%', ?1, '%')) " +
             " OR UPPER(i.description) LIKE UPPER(concat('%', ?1, '%'))) " +

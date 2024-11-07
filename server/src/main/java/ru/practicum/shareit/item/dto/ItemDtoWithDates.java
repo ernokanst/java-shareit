@@ -4,7 +4,9 @@ import lombok.*;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import java.util.List;
 
-@Data
+@Getter
+@Setter
+@ToString
 @AllArgsConstructor
 @NoArgsConstructor
 public class ItemDtoWithDates {

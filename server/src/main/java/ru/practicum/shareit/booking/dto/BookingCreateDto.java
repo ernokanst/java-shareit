@@ -3,7 +3,9 @@ package ru.practicum.shareit.booking.dto;
 import lombok.*;
 import java.time.LocalDateTime;
 
-@Data
+@Getter
+@Setter
+@ToString
 @AllArgsConstructor
 @NoArgsConstructor
 public class BookingCreateDto {

@@ -2,7 +2,9 @@ package ru.practicum.shareit.user.dto;
 
 import lombok.*;
 
-@Data
+@Getter
+@Setter
+@ToString
 @AllArgsConstructor
 @NoArgsConstructor
 public class UserDto {

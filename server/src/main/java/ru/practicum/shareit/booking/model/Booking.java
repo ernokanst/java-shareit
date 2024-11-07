@@ -7,7 +7,9 @@ import ru.practicum.shareit.user.model.User;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
-@Data
+@Getter
+@Setter
+@ToString
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
