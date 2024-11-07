@@ -64,8 +64,8 @@ public class ItemRequestServiceImplTest {
         List<ItemRequestDto> result;
         requestService.create(request, user1.getId());
         requestService.create(request, user2.getId());
-        itemService.add(item1, user2.getId());
-        itemService.add(item2, user1.getId());
+        item1 = itemService.add(item1, user2.getId());
+        item2 = itemService.add(item2, user1.getId());
         result = requestService.getAll();
         assertThat(result, hasSize(2));
         assertThat(result.getLast().getItems(), hasSize(2));
