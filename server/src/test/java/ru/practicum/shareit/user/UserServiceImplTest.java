@@ -23,7 +23,7 @@ public class UserServiceImplTest {
     private final UserMapper userMapper;
     private UserDto user1 = new UserDto(1, "John Doe", "noreply@example.com");
     private UserDto user2 = new UserDto(2, "Jane Doe", "email@example.ru");
-    
+
     @Test
     void testAddGet() {
         UserDto resultService = userService.add(user1);
