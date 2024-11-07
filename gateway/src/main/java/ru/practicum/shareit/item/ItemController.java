@@ -17,26 +17,26 @@ import ru.practicum.shareit.item.dto.ItemDto;
 public class ItemController {
     private final ItemClient itemClient;
 
-    private final String USER_ID_HEADER = "X-Sharer-User-Id";
+    private final String userIdHeader = "X-Sharer-User-Id";
 
     @PostMapping
-    public ResponseEntity<Object> add(@RequestBody @Valid ItemDto item, @RequestHeader(USER_ID_HEADER) int userId, HttpServletResponse response) {
+    public ResponseEntity<Object> add(@RequestBody @Valid ItemDto item, @RequestHeader(userIdHeader) int userId, HttpServletResponse response) {
         return itemClient.add(item, userId);
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<Object> update(@RequestBody ItemDto item, @PathVariable int id, @RequestHeader(USER_ID_HEADER) int userId, HttpServletResponse response) {
+    public ResponseEntity<Object> update(@RequestBody ItemDto item, @PathVariable int id, @RequestHeader(userIdHeader) int userId, HttpServletResponse response) {
         item.setId(id);
         return itemClient.update(item, userId);
     }
 
     @GetMapping
-    public ResponseEntity<Object> get(@RequestHeader(USER_ID_HEADER) int userId) {
+    public ResponseEntity<Object> get(@RequestHeader(userIdHeader) int userId) {
         return itemClient.get(userId);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Object> getItem(@PathVariable int id, @RequestHeader(USER_ID_HEADER) int userId) {
+    public ResponseEntity<Object> getItem(@PathVariable int id, @RequestHeader(userIdHeader) int userId) {
         return itemClient.getItem(id, userId);
     }
 
@@ -51,7 +51,7 @@ public class ItemController {
     }
 
     @PostMapping("/{itemId}/comment")
-    public ResponseEntity<Object> comment(@RequestBody CommentDto comment, @PathVariable int itemId, @RequestHeader(USER_ID_HEADER) int userId) {
+    public ResponseEntity<Object> comment(@RequestBody CommentDto comment, @PathVariable int itemId, @RequestHeader(userIdHeader) int userId) {
         return itemClient.comment(comment, itemId, userId);
     }
 }

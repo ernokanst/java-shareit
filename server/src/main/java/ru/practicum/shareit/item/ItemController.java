@@ -17,26 +17,26 @@ import java.time.LocalDateTime;
 public class ItemController {
     private final ItemService itemService;
 
-    private final String USER_ID_HEADER = "X-Sharer-User-Id";
+    private final String userIdHeader = "X-Sharer-User-Id";
 
     @PostMapping
-    public ResponseEntity<Object> add(@RequestBody ItemDto item, @RequestHeader(USER_ID_HEADER) int userId, HttpServletResponse response) {
+    public ResponseEntity<Object> add(@RequestBody ItemDto item, @RequestHeader(userIdHeader) int userId, HttpServletResponse response) {
         return new ResponseEntity<>(itemService.add(item, userId), HttpStatus.OK);
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<Object> update(@RequestBody ItemDto item, @PathVariable int id, @RequestHeader(USER_ID_HEADER) int userId, HttpServletResponse response) {
+    public ResponseEntity<Object> update(@RequestBody ItemDto item, @PathVariable int id, @RequestHeader(userIdHeader) int userId, HttpServletResponse response) {
         item.setId(id);
         return new ResponseEntity<>(itemService.update(item, userId), HttpStatus.OK);
     }
 
     @GetMapping
-    public ResponseEntity<Object> get(@RequestHeader(USER_ID_HEADER) int userId) {
+    public ResponseEntity<Object> get(@RequestHeader(userIdHeader) int userId) {
         return new ResponseEntity<>(itemService.get(userId), HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Object> getItem(@PathVariable int id, @RequestHeader(USER_ID_HEADER) int userId) {
+    public ResponseEntity<Object> getItem(@PathVariable int id, @RequestHeader(userIdHeader) int userId) {
         return new ResponseEntity<>(itemService.getItem(id, userId), HttpStatus.OK);
     }
 
@@ -51,7 +51,7 @@ public class ItemController {
     }
 
     @PostMapping("/{itemId}/comment")
-    public ResponseEntity<Object> comment(@RequestBody CommentDto comment, @PathVariable int itemId, @RequestHeader(USER_ID_HEADER) int userId) {
+    public ResponseEntity<Object> comment(@RequestBody CommentDto comment, @PathVariable int itemId, @RequestHeader(userIdHeader) int userId) {
         return new ResponseEntity<>(itemService.comment(comment, itemId, userId, LocalDateTime.now()), HttpStatus.OK);
     }
 }

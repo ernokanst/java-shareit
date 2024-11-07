@@ -16,15 +16,15 @@ import ru.practicum.shareit.request.dto.ItemRequestDto;
 public class ItemRequestController {
     private final ItemRequestClient requestClient;
 
-    private final String USER_ID_HEADER = "X-Sharer-User-Id";
+    private final String userIdHeader = "X-Sharer-User-Id";
 
     @PostMapping
-    public ResponseEntity<Object> create(@RequestBody @Valid ItemRequestDto request, @RequestHeader(USER_ID_HEADER) int userId, HttpServletResponse response) {
+    public ResponseEntity<Object> create(@RequestBody @Valid ItemRequestDto request, @RequestHeader(userIdHeader) int userId, HttpServletResponse response) {
         return requestClient.create(request, userId);
     }
 
     @GetMapping
-    public ResponseEntity<Object> getFromUser(@RequestHeader(USER_ID_HEADER) int userId) {
+    public ResponseEntity<Object> getFromUser(@RequestHeader(userIdHeader) int userId) {
         return requestClient.getFromUser(userId);
     }
 

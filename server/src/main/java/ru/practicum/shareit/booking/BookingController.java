@@ -15,30 +15,30 @@ import ru.practicum.shareit.booking.service.BookingService;
 public class BookingController {
     private final BookingService bookingService;
 
-    private final String USER_ID_HEADER = "X-Sharer-User-Id";
+    private final String userIdHeader = "X-Sharer-User-Id";
 
     @PostMapping
-    public ResponseEntity<Object> add(@RequestBody BookingCreateDto booking, @RequestHeader(USER_ID_HEADER) int userId) {
+    public ResponseEntity<Object> add(@RequestBody BookingCreateDto booking, @RequestHeader(userIdHeader) int userId) {
         return new ResponseEntity<>(bookingService.add(booking, userId), HttpStatus.OK);
     }
 
     @PatchMapping("/{bookingId}")
-    public ResponseEntity<Object> approve(@PathVariable int bookingId, @RequestParam boolean approved, @RequestHeader(USER_ID_HEADER) int userId) {
+    public ResponseEntity<Object> approve(@PathVariable int bookingId, @RequestParam boolean approved, @RequestHeader(userIdHeader) int userId) {
         return new ResponseEntity<>(bookingService.approve(userId, bookingId, approved), HttpStatus.OK);
     }
 
     @GetMapping("/{bookingId}")
-    public ResponseEntity<Object> get(@PathVariable int bookingId, @RequestHeader(USER_ID_HEADER) int userId) {
+    public ResponseEntity<Object> get(@PathVariable int bookingId, @RequestHeader(userIdHeader) int userId) {
         return new ResponseEntity<>(bookingService.get(bookingId, userId), HttpStatus.OK);
     }
 
     @GetMapping
-    public ResponseEntity<Object> getAll(@RequestParam(value = "state", defaultValue = "ALL") BookingState state, @RequestHeader(USER_ID_HEADER) int userId) {
+    public ResponseEntity<Object> getAll(@RequestParam(value = "state", defaultValue = "ALL") BookingState state, @RequestHeader(userIdHeader) int userId) {
         return new ResponseEntity<>(bookingService.getAll(state, userId), HttpStatus.OK);
     }
 
     @GetMapping("/owner")
-    public ResponseEntity<Object> getAllOwner(@RequestParam(value = "state", defaultValue = "ALL") BookingState state, @RequestHeader(USER_ID_HEADER) int userId) {
+    public ResponseEntity<Object> getAllOwner(@RequestParam(value = "state", defaultValue = "ALL") BookingState state, @RequestHeader(userIdHeader) int userId) {
         return new ResponseEntity<>(bookingService.getAllOwner(state, userId), HttpStatus.OK);
     }
 }
