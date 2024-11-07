@@ -31,7 +31,7 @@ public class ItemRequestControllerTest {
     @Autowired
     private MockMvc mvc;
 
-    private ItemRequestDto request = new ItemRequestDto(
+    private final ItemRequestDto request = new ItemRequestDto(
             1,
             "Description",
             1,

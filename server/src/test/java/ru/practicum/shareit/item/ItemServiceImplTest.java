@@ -36,7 +36,7 @@ public class ItemServiceImplTest {
     private final ItemMapper itemMapper;
     private final BookingService bookingService;
 
-    private CommentDto comment = new CommentDto(1, "Good", "Jane Doe", "2024-01-01T12:34:56");
+    private final CommentDto comment = new CommentDto(1, "Good", "Jane Doe", "2024-01-01T12:34:56");
     private UserDto user1 = new UserDto(1, "John Doe", "noreply@example.com");
     private UserDto user2 = new UserDto(2, "Jane Doe", "email@example.ru");
 

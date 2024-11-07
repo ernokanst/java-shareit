@@ -21,7 +21,6 @@ public class UserServiceImplTest {
     private final EntityManager em;
     private final UserService userService;
     private final UserMapper userMapper;
-
     private UserDto user1 = new UserDto(1, "John Doe", "noreply@example.com");
     private UserDto user2 = new UserDto(2, "Jane Doe", "email@example.ru");
     

@@ -32,9 +32,9 @@ public class ItemControllerTest {
     @Autowired
     private MockMvc mvc;
 
-    private CommentDto comment = new CommentDto(1, "Good", "John Doe", "2024-01-01T12:34:56");
+    private final CommentDto comment = new CommentDto(1, "Good", "John Doe", "2024-01-01T12:34:56");
 
-    private ItemDto item = new ItemDto(
+    private final ItemDto item = new ItemDto(
             1,
             "Item",
             "Description",
@@ -42,7 +42,7 @@ public class ItemControllerTest {
             List.of(comment),
             1);
 
-    private ItemDtoWithDates itemWithDates = new ItemDtoWithDates(
+    private final ItemDtoWithDates itemWithDates = new ItemDtoWithDates(
             1,
             "Item with dates",
             "Description",

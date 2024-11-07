@@ -31,8 +31,8 @@ public class UserControllerTest {
     @Autowired
     private MockMvc mvc;
 
-    private UserDto user = new UserDto(1, "John Doe", "email@example.com");
-    private UserUpdateDto userUpdate = new UserUpdateDto(1, "Jane Doe", "email@example.ru");
+    private final UserDto user = new UserDto(1, "John Doe", "email@example.com");
+    private final UserUpdateDto userUpdate = new UserUpdateDto(1, "Jane Doe", "email@example.ru");
 
     @Test
     void testAdd() throws Exception {
