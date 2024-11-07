@@ -9,6 +9,7 @@ import java.util.List;
 @Getter
 @Setter
 @ToString
+@EqualsAndHashCode
 @AllArgsConstructor
 @NoArgsConstructor
 public class ItemDto {

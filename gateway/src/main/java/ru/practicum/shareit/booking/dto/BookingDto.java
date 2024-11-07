@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @ToString
+@EqualsAndHashCode
 @AllArgsConstructor
 @NoArgsConstructor
 public class BookingDto {
